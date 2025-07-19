@@ -88,7 +88,7 @@ paths:
       summary: Register a new violation
       operationId: createViolation
       tags:
-        - Registry Violation
+        - Violation
       requestBody:
         required: true
         content:
@@ -98,7 +98,7 @@ paths:
               required: [violation, picture]
               properties:
                 violation:
-                  $ref: '#/components/schemas/ViolationRequestRepresentation'
+                  $ref: '#/components/schemas/ViolationRequest'
                 picture:
                   type: string
                   format: binary
@@ -109,7 +109,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ViolationResponseRepresentation'
+                $ref: '#/components/schemas/ViolationResponse'
         '400':
           description: Invalid input
           content:
@@ -127,7 +127,7 @@ paths:
       summary: Find violation by ID
       operationId: findViolationById
       tags:
-        - Consult Violation By ID
+        - Violation
       parameters:
         - name: id
           in: path
@@ -141,7 +141,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ViolationResponseRepresentation'
+                $ref: '#/components/schemas/ViolationResponse'
         '404':
           description: Violation not found
           content:
@@ -153,7 +153,7 @@ paths:
       summary: List violations by equipment serial
       operationId: listViolationsByEquipment
       tags:
-        - Consult Violation By Equipment Serial
+        - Violation
       parameters:
         - name: serial
           in: path
@@ -180,7 +180,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ViolationResponseRepresentation'
+                  $ref: '#/components/schemas/ViolationResponse'
 components:
   schemas:
     LoginRequest:
@@ -244,7 +244,7 @@ components:
           maximum: 180
         active:
           type: boolean
-    ViolationRequestRepresentation:
+    ViolationRequest:
       type: object
       required: [equipmentSerial, occurrenceDateUtc, picture, type]
       properties:
@@ -269,7 +269,7 @@ components:
         type:
           type: string
           enum: [VELOCITY, STOP_CROSSWALKING]
-    ViolationResponseRepresentation:
+    ViolationResponse:
       type: object
       required: [id, equipmentSerial, occurrenceDateUtc, picture, type]
       properties:

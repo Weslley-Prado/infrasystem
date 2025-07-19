@@ -1,0 +1,46 @@
+openapi: 3.0.3
+info:
+  title: Authentication API
+  version: 1.0.0
+
+paths:
+  /auth/login:
+    post:
+      summary: Autenticar usuário
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        '200':
+          description: Token JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        '401':
+          description: Unauthorized
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    TokenResponse:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string

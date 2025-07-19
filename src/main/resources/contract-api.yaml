@@ -18,20 +18,20 @@ paths:
       summary: Create a new equipment
       operationId: createEquipment
       tags:
-        - Registry Equipment
+        - Equipment
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EquipmentRequestRepresentation'
+              $ref: '#/components/schemas/EquipmentRequest'
       responses:
         '201':
           description: Equipment created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EquipmentResponseRepresentation'
+                $ref: '#/components/schemas/EquipmentResponse'
         '400':
           description: Invalid input
           content:
@@ -48,7 +48,7 @@ paths:
       summary: List all equipments
       operationId: listEquipments
       tags:
-        - Consult Equipment
+        - Equipment
       responses:
         '200':
           description: List of equipments
@@ -57,13 +57,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EquipmentResponseRepresentation'
+                  $ref: '#/components/schemas/EquipmentResponse'
   /equipments/{serial}:
     get:
       summary: Find equipment by serial
       operationId: findEquipmentBySerial
       tags:
-        - Consult Equipment By Serial
+        - Equipment
       parameters:
         - name: serial
           in: path
@@ -76,7 +76,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EquipmentResponseRepresentation'
+                $ref: '#/components/schemas/EquipmentResponse'
         '404':
           description: Equipment not found
           content:
@@ -198,7 +198,7 @@ components:
         token:
           type: string
           description: JWT token for authentication
-    EquipmentRequestRepresentation:
+    EquipmentRequest:
       type: object
       required: [serial, model, address, latitude, longitude, active]
       properties:
@@ -221,7 +221,7 @@ components:
           maximum: 180
         active:
           type: boolean
-    EquipmentResponseRepresentation:
+    EquipmentResponse:
       type: object
       required: [serial, model, address, latitude, longitude, active]
       properties:

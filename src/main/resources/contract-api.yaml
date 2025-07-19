@@ -1,46 +1,311 @@
 openapi: 3.0.3
 info:
-  title: Authentication API
+  title: D'Agostini Infraction Service API
+  description: API for managing equipment and violations
   version: 1.0.0
+servers:
+  - url: http://localhost:8887
+    description: Local server
+tags:
+  - name: Infra System
+    description: Equipment and traffic violation management service
+security:
+  - BearerAuth: []
 
 paths:
-  /auth/login:
+  /equipments:
     post:
-      summary: Autenticar usuário
-      operationId: login
+      summary: Create a new equipment
+      operationId: createEquipment
+      tags:
+        - Registry Equipment
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginRequest"
+              $ref: '#/components/schemas/EquipmentRequestRepresentation'
       responses:
-        '200':
-          description: Token JWT
+        '201':
+          description: Equipment created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TokenResponse"
-        '401':
-          description: Unauthorized
-
+                $ref: '#/components/schemas/EquipmentResponseRepresentation'
+        '400':
+          description: Invalid input
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: Equipment already exists
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+    get:
+      summary: List all equipments
+      operationId: listEquipments
+      tags:
+        - Consult Equipment
+      responses:
+        '200':
+          description: List of equipments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EquipmentResponseRepresentation'
+  /equipments/{serial}:
+    get:
+      summary: Find equipment by serial
+      operationId: findEquipmentBySerial
+      tags:
+        - Consult Equipment By Serial
+      parameters:
+        - name: serial
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Equipment found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EquipmentResponseRepresentation'
+        '404':
+          description: Equipment not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+  /violations:
+    post:
+      summary: Register a new violation
+      operationId: createViolation
+      tags:
+        - Registry Violation
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [violation, picture]
+              properties:
+                violation:
+                  $ref: '#/components/schemas/ViolationRequestRepresentation'
+                picture:
+                  type: string
+                  format: binary
+                  description: Image file (JPEG or PNG, max size 1MB)
+      responses:
+        '201':
+          description: Violation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViolationResponseRepresentation'
+        '400':
+          description: Invalid input
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: Equipment inactive or not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+  /violations/{id}:
+    get:
+      summary: Find violation by ID
+      operationId: findViolationById
+      tags:
+        - Consult Violation By ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Violation found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViolationResponseRepresentation'
+        '404':
+          description: Violation not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+  /equipments/{serial}/violations:
+    get:
+      summary: List violations by equipment serial
+      operationId: listViolationsByEquipment
+      tags:
+        - Consult Violation By Equipment Serial
+      parameters:
+        - name: serial
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: List of violations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ViolationResponseRepresentation'
 components:
   schemas:
     LoginRequest:
       type: object
-      required:
-        - username
-        - password
+      required: [username, password]
       properties:
         username:
           type: string
         password:
           type: string
-
-    TokenResponse:
+    LoginResponse:
       type: object
-      required:
-        - token
+      required: [token]
       properties:
         token:
           type: string
+          description: JWT token for authentication
+    EquipmentRequestRepresentation:
+      type: object
+      required: [serial, model, address, latitude, longitude, active]
+      properties:
+        serial:
+          type: string
+          maxLength: 50
+        model:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+          maxLength: 255
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+        active:
+          type: boolean
+    EquipmentResponseRepresentation:
+      type: object
+      required: [serial, model, address, latitude, longitude, active]
+      properties:
+        serial:
+          type: string
+          maxLength: 50
+        model:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+          maxLength: 255
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+        active:
+          type: boolean
+    ViolationRequestRepresentation:
+      type: object
+      required: [equipmentSerial, occurrenceDateUtc, picture, type]
+      properties:
+        equipmentSerial:
+          type: string
+          maxLength: 50
+        occurrenceDateUtc:
+          type: string
+          format: date-time
+        measuredSpeed:
+          type: number
+          minimum: 0
+        consideredSpeed:
+          type: number
+          minimum: 0
+        regulatedSpeed:
+          type: number
+          minimum: 0
+        picture:
+          type: string
+          maxLength: 1048576
+        type:
+          type: string
+          enum: [VELOCITY, STOP_CROSSWALKING]
+    ViolationResponseRepresentation:
+      type: object
+      required: [id, equipmentSerial, occurrenceDateUtc, picture, type]
+      properties:
+        id:
+          type: integer
+          format: int64
+        equipmentSerial:
+          type: string
+          maxLength: 50
+        occurrenceDateUtc:
+          type: string
+          format: date-time
+        measuredSpeed:
+          type: number
+          minimum: 0
+        consideredSpeed:
+          type: number
+          minimum: 0
+        regulatedSpeed:
+          type: number
+          minimum: 0
+        picture:
+          type: string
+          maxLength: 1048576
+        type:
+          type: string
+          enum: [VELOCITY, STOP_CROSSWALKING]
+    ProblemDetail:
+      type: object
+      properties:
+        status:
+          type: integer
+        detail:
+          type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

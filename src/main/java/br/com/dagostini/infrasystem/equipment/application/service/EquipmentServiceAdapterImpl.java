@@ -4,33 +4,34 @@ import br.com.dagostini.infrasystem.equipment.application.usecase.CreateEquipmen
 import br.com.dagostini.infrasystem.equipment.application.usecase.GetEquipmentBySerialUseCase;
 import br.com.dagostini.infrasystem.equipment.application.usecase.ListEquipmentsUseCase;
 import br.com.dagostini.infrasystem.equipment.domain.model.Equipment;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class EquipmentService {
+@RequiredArgsConstructor
+public class EquipmentServiceAdapterImpl implements EquipmentServiceAdapter {
     private final CreateEquipmentUseCase createEquipmentUseCase;
     private final ListEquipmentsUseCase listEquipmentsUseCase;
     private final GetEquipmentBySerialUseCase getEquipmentBySerialUseCase;
 
-    public EquipmentService(CreateEquipmentUseCase createEquipmentUseCase,
-                            ListEquipmentsUseCase listEquipmentsUseCase,
-                            GetEquipmentBySerialUseCase getEquipmentBySerialUseCase) {
-        this.createEquipmentUseCase = createEquipmentUseCase;
-        this.listEquipmentsUseCase = listEquipmentsUseCase;
-        this.getEquipmentBySerialUseCase = getEquipmentBySerialUseCase;
-    }
-
+    @Override
     public Equipment createEquipment(Equipment equipment) {
         return createEquipmentUseCase.execute(equipment);
     }
-
+    @Override
     public List<Equipment> listEquipments() {
         return listEquipmentsUseCase.execute();
     }
-
+    @Override
     public Equipment getEquipmentBySerial(String serial) {
         return getEquipmentBySerialUseCase.execute(serial);
+    }
+
+    @Override
+    public Boolean isEquipmentActive(String serial) {
+        var equipment = getEquipmentBySerialUseCase.execute(serial);
+        return equipment.getActive();
     }
 }

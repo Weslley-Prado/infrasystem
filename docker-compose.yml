@@ -1,0 +1,76 @@
+version: '3.9'
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"     # API
+      - "9001:9001"     # Console Web
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - infrasystem-network
+
+  minio-setup:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 10 &&
+      mc alias set local http://minio:9000 minioadmin minioadmin &&
+      mc policy set public local/violations-bucket
+      "
+    networks:
+      - infrasystem-network
+  postgres:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=db_infrasystem
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - infrasystem-network
+
+  infrasystem:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8887:8887"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_APPLICATION_NAME=infrasystem
+      - SERVER_PORT=8887
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/db_infrasystem
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_FLYWAY_ENABLED=true
+      - SPRING_FLYWAY_LOCATIONS=classpath:db/migration
+      - SPRING_FLYWAY_BASELINE_ON_MIGRATE=true
+      - cloud.aws.s3.endpoint=http://minio:9000
+      - cloud.aws.credentials.access-key=minioadmin
+      - cloud.aws.credentials.secret-key=minioadmin
+      - cloud.aws.region.static=us-east-1
+
+    depends_on:
+      - minio
+      - postgres
+    networks:
+      - infrasystem-network
+
+networks:
+  infrasystem-network:
+    driver: bridge
+
+volumes:
+  minio_data:
+  postgres-data:

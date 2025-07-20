@@ -3,7 +3,7 @@ package br.com.dagostini.infrasystem.equipment.interfaces.controller;
 import br.com.agostini.openapi.provider.api.EquipmentsApi;
 import br.com.agostini.openapi.provider.representation.EquipmentRequestRepresentation;
 import br.com.agostini.openapi.provider.representation.EquipmentResponseRepresentation;
-import br.com.dagostini.infrasystem.equipment.application.service.EquipmentService;
+import br.com.dagostini.infrasystem.equipment.application.service.EquipmentServiceAdapterImpl;
 import br.com.dagostini.infrasystem.equipment.domain.model.Equipment;
 import br.com.dagostini.infrasystem.equipment.interfaces.mapper.EquipmentDtoMapper;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 public class EquipmentController implements EquipmentsApi {
-    private final EquipmentService equipmentService;
+    private final EquipmentServiceAdapterImpl equipmentService;
     private final EquipmentDtoMapper mapper;
 
     @Override

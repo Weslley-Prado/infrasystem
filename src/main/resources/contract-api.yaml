@@ -122,32 +122,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
-  /violations/{id}:
-    get:
-      summary: Find violation by ID
-      operationId: findViolationById
-      tags:
-        - Violation
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Violation found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ViolationResponse'
-        '404':
-          description: Violation not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
   /equipments/{serial}/violations:
     get:
       summary: List violations by equipment serial
@@ -181,6 +155,32 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ViolationResponse'
+  /violations/{id}:
+    get:
+      summary: Find violation by ID
+      operationId: findViolationById
+      tags:
+        - Violation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Violation found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViolationResponse'
+        '404':
+          description: Violation not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
 components:
   schemas:
     LoginRequest:

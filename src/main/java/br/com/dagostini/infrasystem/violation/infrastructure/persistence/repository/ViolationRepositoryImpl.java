@@ -6,6 +6,10 @@ import br.com.dagostini.infrasystem.violation.infrastructure.persistence.entity.
 import br.com.dagostini.infrasystem.violation.infrastructure.persistence.mapper.ViolationMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
 @Repository
 public class ViolationRepositoryImpl implements ViolationRepository {
 
@@ -27,5 +31,13 @@ public class ViolationRepositoryImpl implements ViolationRepository {
     @Override
     public Violation findById(Long id) {
         return mapper.toDomain(jpaRepository.getReferenceById(id));
+    }
+
+    @Override
+    public List<Violation> findBySerialAndOptionalDateRange(String serial, Date from, Date to) {
+        if(Objects.isNull(from) && Objects.isNull(to)){
+            return mapper.toDomainList(jpaRepository.findBySerialAndOptional(serial));
+        }
+        return mapper.toDomainList(jpaRepository.findBySerialAndOptionalDateRange(serial, from, to));
     }
 }

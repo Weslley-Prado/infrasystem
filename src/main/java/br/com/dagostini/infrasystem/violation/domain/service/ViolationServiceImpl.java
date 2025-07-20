@@ -7,6 +7,9 @@ import br.com.dagostini.infrasystem.violation.domain.repository.ViolationReposit
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.List;
+
 @Slf4j
 @Service
 public class ViolationServiceImpl implements ViolationService {
@@ -34,5 +37,10 @@ public class ViolationServiceImpl implements ViolationService {
     @Override
     public Violation findViolationById(Long id) {
         return violationRepository.findById(id);
+    }
+
+    @Override
+    public List<Violation> listViolationsByEquipment(String serial, Date from, Date to) {
+        return violationRepository.findBySerialAndOptionalDateRange(serial,from,to);
     }
 }

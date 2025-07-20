@@ -4,4 +4,5 @@ import br.com.dagostini.infrasystem.violation.domain.model.Violation;
 
 public interface ViolationService {
     Violation createViolation(Violation violation);
+    Violation findViolationById(Long id);
 }

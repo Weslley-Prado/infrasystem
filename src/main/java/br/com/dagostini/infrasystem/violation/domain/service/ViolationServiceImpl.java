@@ -30,4 +30,9 @@ public class ViolationServiceImpl implements ViolationService {
 
         return violationRepository.save(violation);
     }
+
+    @Override
+    public Violation findViolationById(Long id) {
+        return violationRepository.findById(id);
+    }
 }

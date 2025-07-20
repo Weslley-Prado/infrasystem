@@ -5,12 +5,12 @@ import br.com.agostini.openapi.provider.representation.ViolationRequestRepresent
 import br.com.agostini.openapi.provider.representation.ViolationResponseRepresentation;
 import br.com.dagostini.infrasystem.shared.utils.ImageStorageUseCase;
 import br.com.dagostini.infrasystem.violation.application.usecase.CreateViolationUseCase;
+import br.com.dagostini.infrasystem.violation.application.usecase.FindViolationByIdUseCase;
 import br.com.dagostini.infrasystem.violation.domain.model.Violation;
 import br.com.dagostini.infrasystem.violation.interfaces.mapper.ViolationDtoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -28,13 +28,14 @@ public class ViolationController implements ViolationsApi {
 
     private final CreateViolationUseCase createViolationUseCase;
 
+    private final FindViolationByIdUseCase findViolationByIdUseCase;
+
     @Override
     public Optional<NativeWebRequest> getRequest() {
         return ViolationsApi.super.getRequest();
     }
 
     @Override
-//    @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<ViolationResponseRepresentation> createViolation(@RequestPart("violation") ViolationRequestRepresentation violationRequestRepresentation, @RequestPart("picture") MultipartFile picture) {
         if (violationRequestRepresentation.getType() == ViolationRequestRepresentation.TypeEnum.VELOCITY) {
             if (violationRequestRepresentation.getMeasuredSpeed() == null ||
@@ -54,6 +55,7 @@ public class ViolationController implements ViolationsApi {
 
     @Override
     public ResponseEntity<ViolationResponseRepresentation> findViolationById(Long id) {
-        return ViolationsApi.super.findViolationById(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(violationDtoMapper.toResponse( findViolationByIdUseCase.findViolationById(id)));
     }
 }

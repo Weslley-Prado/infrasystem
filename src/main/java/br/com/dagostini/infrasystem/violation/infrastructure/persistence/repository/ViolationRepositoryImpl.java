@@ -23,4 +23,9 @@ public class ViolationRepositoryImpl implements ViolationRepository {
         entity = jpaRepository.save(entity);
         return mapper.toDomain(entity);
     }
+
+    @Override
+    public Violation findById(Long id) {
+        return mapper.toDomain(jpaRepository.getReferenceById(id));
+    }
 }

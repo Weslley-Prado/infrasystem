@@ -1,9 +1,10 @@
 package br.com.dagostini.infrasystem.violation.domain.service;
 
 import br.com.dagostini.infrasystem.equipment.application.service.EquipmentServiceAdapter;
-import br.com.dagostini.infrasystem.violation.domain.exception.ViolationException;
+import br.com.dagostini.infrasystem.violation.application.service.ViolationServiceAdapter;
+import br.com.dagostini.infrasystem.violation.domain.exception.ViolationValidationException;
 import br.com.dagostini.infrasystem.violation.domain.model.Violation;
-import br.com.dagostini.infrasystem.violation.domain.repository.ViolationRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +13,10 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ViolationServiceImpl implements ViolationService {
-    private final ViolationRepository violationRepository;
+    private final ViolationServiceAdapter violationServiceAdapter;
     private final EquipmentServiceAdapter conectionEquipmentService;
-
-    public ViolationServiceImpl(ViolationRepository violationRepository, EquipmentServiceAdapter conectionEquipmentService) {
-        this.violationRepository = violationRepository;
-        this.conectionEquipmentService = conectionEquipmentService;
-    }
 
     @Override
     public Violation createViolation(Violation violation) {
@@ -28,19 +25,18 @@ public class ViolationServiceImpl implements ViolationService {
         Boolean isActive = conectionEquipmentService.isEquipmentActive(violation.equipmentSerial());
         if (!isActive) {
             log.error("Cannot create violation: Equipment {} is inactive", violation.equipmentSerial());
-            throw new ViolationException("Cannot create violation for inactive equipment: " + violation.equipmentSerial());
+            throw new ViolationValidationException("Cannot create violation for inactive equipment: " + violation.equipmentSerial());
         }
-
-        return violationRepository.save(violation);
+        return violationServiceAdapter.saveViolationRegistry(violation);
     }
 
     @Override
     public Violation findViolationById(Long id) {
-        return violationRepository.findById(id);
+        return violationServiceAdapter.findViolationById(id);
     }
 
     @Override
     public List<Violation> listViolationsByEquipment(String serial, Date from, Date to) {
-        return violationRepository.findBySerialAndOptionalDateRange(serial,from,to);
+        return violationServiceAdapter.listViolationsByEquipment(serial,from,to);
     }
 }

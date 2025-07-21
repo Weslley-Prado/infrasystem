@@ -21,7 +21,7 @@ public class S3Config {
                         AwsBasicCredentials.create("minioadmin", "minioadmin")
                 ))
                 .serviceConfiguration(S3Configuration.builder()
-                        .pathStyleAccessEnabled(true)  // ✅ ESSENCIAL
+                        .pathStyleAccessEnabled(true)
                         .build())
                 .build();
     }

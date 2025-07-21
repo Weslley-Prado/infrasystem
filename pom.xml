@@ -130,15 +130,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
-		<!-- Lombok -->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-		</dependency>
-
-		<!-- Observabilidade -->
-
-
 		<!-- MapStruct -->
 		<dependency>
 			<groupId>org.mapstruct</groupId>
@@ -269,6 +260,11 @@
 			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-junit</artifactId>
 			<version>${cucumber.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -452,6 +448,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -464,7 +461,7 @@
 					</execution>
 					<execution>
 						<id>report</id>
-						<phase>test</phase>
+						<phase>verify</phase>
 						<goals>
 							<goal>report</goal>
 						</goals>
@@ -492,15 +489,12 @@
 				</executions>
 				<configuration>
 					<excludes>
-						<exclude>**/config/**</exclude>
-						<exclude>**/exception/**</exclude>
-						<exclude>**/adapter/in/web/mapper/**</exclude>
-						<exclude>**/adapter/in/web/bound/**</exclude>
-						<exclude>**/adapter/out/database/mapper/**</exclude>
-						<exclude>**/adapter/out/database/bound/**</exclude>
-						<exclude>**/domain/model/**</exclude>
 						<exclude>**/openapi/*/**</exclude>
-						<exclude>**/PbmCartApplication.*</exclude>
+						<exclude>br/com/dagostini/infrasystem/InfrasystemApplication.class</exclude>
+						<exclude>br/com/dagostini/infrasystem/equipment/infrastructure/persistence/entity/EquipmentEntity.class</exclude>
+						<exclude>br/com/dagostini/infrasystem/violation/infrastructure/persistence/entity/ViolationEntity.class</exclude>
+						<exclude>br/com/dagostini/infrasystem/shared/domain/auth/model/TokenInfo.class</exclude>
+						<exclude>br/com/dagostini/infrasystem/shared/domain/auth/model/TokenInfo$TokenInfoBuilder.class</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
